@@ -1,0 +1,46 @@
+name: San-X Monthly Releases Monitor
+
+on:
+  schedule:
+    # Run every 2 hours (adjust as needed)
+    - cron: '0 */2 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+        
+    - name: Download previous hash file
+      uses: actions/download-artifact@v3
+      with:
+        name: sanx-hash
+        path: .
+      continue-on-error: true
+      
+    - name: Run San-X monthly releases monitor
+      env:
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+      run: python sanx_monitor.py
+      
+    - name: Upload hash file
+      uses: actions/upload-artifact@v3
+      with:
+        name: sanx-hash
+        path: sanx_hash.json
+        retention-days: 30
