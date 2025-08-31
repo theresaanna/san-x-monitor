@@ -36,7 +36,7 @@ jobs:
         SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-      run: python monitor.py
+      run: python sanx_monitor.py
       
     - name: Upload hash file
       uses: actions/upload-artifact@v3
@@ -44,4 +44,5 @@ jobs:
         name: sanx-hash
         path: sanx_hash.json
         retention-days: 30
+
 
